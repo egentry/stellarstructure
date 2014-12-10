@@ -77,7 +77,7 @@
 \title{Stellar Structure Model}
 \author{Eric Gentry}
 \email{egentry@ucsc.edu}
-%\homepage{http://web.mit.edu/8.13/}
+\homepage{https://github.com/egentry/stellarstructure}
 \date{ \today }
 \affiliation{Astro 220A}
  
@@ -99,7 +99,7 @@ The scope of this work will be to simply create a single, self-consistent model 
 
 \section{Theory}
 \label{sec:theory}
-The theory underlying this model followed the outline of \citet[Chapter 10]{KippenhahnWeigertWeiss}.  Here the main equations are summarized, with the details left to later sections.
+This model followed the outline of \citet[Chapter 10]{KippenhahnWeigertWeiss}.  Here the main equations are summarized, with the details left to later sections.
 
 Using mass enclosed, $m$, as the independent variable, mass conservation and hydrostatic equilibrium (respectively) first give us:
 
@@ -109,7 +109,7 @@ Using mass enclosed, $m$, as the independent variable, mass conservation and hyd
   \frac{\partial P}{\partial m} &=& - \frac{G m}{4 \pi r^4}
    \label{eq:dPdm}
 \end{eqnarray}
-where $r$ is the radius of a shell enclosing a mass, $m$, $\rho$ is the density at that shell, $P$ is the pressure of the shell, and $G$ is the gravitational constant.
+where $r$ is the radius a given shell, $\rho$ is the density, $P$ is the pressure, and $G$ is the gravitational constant.
 
 Similarly, the conservation of energy in a static star gives us the definition of the energy generation rate, $\epsilon$:
 
@@ -117,7 +117,7 @@ Similarly, the conservation of energy in a static star gives us the definition o
   \frac{\partial \ell}{\partial m} \equiv \epsilon
    \label{eq:dldm}
 \end{equation}
-where $\ell$ is the luminosity of a shell enclosing a mass $m$, such that $\ell\left(M_\ast\right) \equiv L_\ast$.
+where $\ell$ is the local luminosity, such that $\ell\left(M_\ast\right) \equiv L_\ast$.
 For details on the energy generation rate, $\epsilon$, see Section \ref{sec:theory:energy}.
 
 The energy being generated in the core, while energy is being radiated at the surface; in order to remain in local thermodynamic equilibrium there needs to be transport of energy within the star.  This transport is 
