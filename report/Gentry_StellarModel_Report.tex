@@ -1,0 +1,429 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sample template for MIT Junior Lab Student Written Summaries
+% Available from http://web.mit.edu/8.13/www/Samplepaper/sample-paper.tex
+%
+% Last Updated August 30, 2011
+%
+% Adapted from the American Physical Societies REVTeK-4.1 Pages
+% at http://publish.aps.org
+%
+% ADVICE TO STUDENTS: Each time you write a paper, start with this
+%    template and save under a new filename.  If convenient, don't
+%    erase unneeded lines, just comment them out.  Often, they
+%    will be useful containers for information.
+%
+% Using pdflatex, images must be either PNG, GIF, JPEG or PDF.
+%     Turn eps to pdf using epstopdf.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PREAMBLE
+% The preamble of a LaTeX document is the set of commands that precede
+% the \begin{document} line.  It contains a \documentclass line
+% to load the REVTeK-4.1 macro definitions and various \usepackage
+% lines to load other macro packages.
+%
+% ADVICE TO STUDENTS: This preamble contains a suggested set of
+%     class options to generate a ``Junior Lab'' look and feel that
+%     facilitate quick review and feedback from one's peers, TA's
+%     and section instructors.  Don't make substantial changes without
+%     first consulting your section instructor.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\documentclass[aps,twocolumn,secnumarabic,balancelastpage,amsmath,amssymb,nofootinbib]{revtex4}
+\documentclass[aps,twocolumn,secnumarabic,balancelastpage,amsmath,amssymb,nofootinbib]{emulateapj}
+ 
+%N.B. - Different computers have different packages installed.  To compile this template in the current
+    % Athena environment, REVTeX 4.1 must be used.  To use the older REVTeX 4, use the commented out
+    % Documentclass instead.  If you are unable to compile the template at all, you
+    % may need to update your LaTeX packages.  Don't hesitate to speak with your section instructor or a 
+    % TA if you're having issues getting this template to compile.
+
+% Documentclass Options
+    % aps, prl stand for American Physical Society and Physical Review Letters respectively
+    % twocolumn permits two columns, of course
+    % nobalancelastpage doesn't attempt to equalize the lengths of the two columns on the last page
+        % as might be desired in a journal where articles follow one another closely
+    % amsmath and amssymb are necessary for the subequations environment among others
+    % secnumarabic identifies sections by number to aid electronic review and commentary.
+    % nofootinbib forces cites to occur on the page where they are first referenced
+        % and not in the bibliography
+    % REVTeX 4.1 is a set of macro packages designed to be used with LaTeX 2e.
+        % REVTeX is well-suited for preparing manuscripts for submission to APS journals.
+       
+
+\usepackage{graphics}      % standard graphics specifications
+\usepackage{graphicx}      % alternative graphics specifications
+\usepackage{epsf}          % old package handles encapsulated post script issues
+\usepackage{epstopdf}
+\usepackage{bm}            % special 'bold-math' package
+\usepackage{float}
+% \usepackage{thumbpdf}
+
+\usepackage{amsmath,graphicx,amssymb}
+                                        % use as follows: \url{http://web.mit.edu/8.13}
+\usepackage[colorlinks=true]{hyperref}  % this package should be added after all others
+
+\hypersetup{linkcolor=black, citecolor=blue, filecolor=black, urlcolor=black}
+% \epstopdfDeclareGraphicsRule{.eps}{pdf}{.pdf}{epstopdf --gsopt="-dPDFSETTINGS=/default" #1 --outfile=\OutputFile}
+
+
+%
+% And now, begin the document...
+%
+
+\begin{document}
+\title{Stellar Structure Model}
+\author{Eric Gentry}
+\email{egentry@ucsc.edu}
+%\homepage{http://web.mit.edu/8.13/}
+\date{ \today }
+\affiliation{Astro 220A}
+ 
+\begin{abstract}
+We modeled a \emph{Zero-Age Main Sequence} star of mass $M_\ast = 2 M_\odot$, assuming a uniform solar-like composition.  Using appropriate initial boundary conditions chosen from \cite{Hansen}, we employed a \emph{shoot to a fit} method, until our boundary conditions resulted in a self-consistent model.  These boundary conditions are compared to the initial boundary conditions, and agree to within about 15\%.  When compared to more sophisticated models, our results agree within 5-10\%. We discuss the effects of observational and numeric systematics which might contribute to those errors.
+\end{abstract}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Introduction}
+\label{sec:introduction}
+While the properties and evolution of stars are an ongoing topic of interest, the typical densities and opacities of stars make it difficult to directly probe much more than their outermost layers.  One indirect way we can learn about the inner regions of stars is through modeling.  By assuming a set of physical processes at play, and boundary parameters regulating those processes, we can model what the resulting star would look like, and compare that to the limited observation data we do have.  Through this approach, particularly when paired with Bayesian statistics, we can determine the likelihood of any given set of physical assumptions and regulating parameters.
+
+The scope of this work will be to simply create a single, self-consistent model of stellar structure.  We will use observation and empirical data to create an initial model, then we will slowly vary those input parameters until our model is self-consistent. Then, we will compare our structure model to models produced by different approaches, including different physics, to gain an understanding of the robustness of our results.
+
+
+\section{Theory}
+\label{sec:theory}
+The theory underlying this model followed the outline of \citet[Chapter 10]{KippenhahnWeigertWeiss}.  Here the main equations are summarized, with the details left to later sections.
+
+Using mass enclosed, $m$, as the independent variable, mass conservation and hydrostatic equilibrium (respectively) first give us:
+
+\begin{eqnarray}
+  \frac{\partial r}{\partial m} &=& \frac{1}{4 \pi \rho r^2} 
+   \label{eq:drdm} \\
+  \frac{\partial P}{\partial m} &=& - \frac{G m}{4 \pi r^4}
+   \label{eq:dPdm}
+\end{eqnarray}
+where $r$ is the radius of a shell enclosing a mass, $m$, $\rho$ is the density at that shell, $P$ is the pressure of the shell, and $G$ is the gravitational constant.
+
+Similarly, the conservation of energy in a static star gives us the definition of the energy generation rate, $\epsilon$:
+
+\begin{equation}
+  \frac{\partial \ell}{\partial m} \equiv \epsilon
+   \label{eq:dldm}
+\end{equation}
+where $\ell$ is the luminosity of a shell enclosing a mass $m$, such that $\ell\left(M_\ast\right) \equiv L_\ast$.
+For details on the energy generation rate, $\epsilon$, see Section \ref{sec:theory:energy}.
+
+The energy being generated in the core, while energy is being radiated at the surface; in order to remain in local thermodynamic equilibrium there needs to be transport of energy within the star.  This transport is 
+\begin{eqnarray}
+  \frac{\partial T}{\partial m} &=& \frac{\partial P}{\partial m} \frac{\partial T}{\partial P} = \frac{\partial P}{\partial m} \frac{\partial T}{\partial P}  = \frac{\partial P}{\partial m}\frac{T}{P} \frac{ \partial\ln T}{ \partial \ln P} \nonumber \\
+  &=& - \frac{G m}{4 \pi r^4} \frac{T}{P} \frac{ \partial\ln T}{ \partial \ln P} \nonumber \\
+  &\equiv& - \frac{G m}{4 \pi r^4} \frac{T}{P} \nabla 
+   \label{eq:dTdm}
+\end{eqnarray}
+where $T$ is the local temperature, and the last line simply defines $\nabla \equiv \frac{\partial \ln T}{\partial \ln P}$, which is discussed in Section \ref{sec:theory:transport}.
+
+Finally we also include an equation of state:
+\begin{equation}
+  P = P_{\mathrm{gas}} + P_\mathrm{rad} = \frac{\rho}{\mu}\mathcal{R} T + \frac{a T^4}{3} 
+  \label{eq:EOS}
+\end{equation}
+where $\mu$ is the mean molecular weight, $\mathcal{R}$ is the ideal gas constant, and $a$ is the radiation constant.
+
+Given the system of Equations \ref{eq:drdm} - \ref{eq:dTdm}, we can integrate to find the physical parameters $\left\{ r, \ell, P, T \right\}$ at any point within the star.  The numerical techniques for doing so will be covered in Section \ref{sec:numerical}.
+
+\subsection{Energy Generation}
+\label{sec:theory:energy}
+
+Equation \ref{eq:dldm} above gave us:
+\begin{equation*}
+    \frac{\partial \ell}{\partial m} \equiv \epsilon 
+\end{equation*}
+but now we must determine $\epsilon$.  In principle, $\epsilon$ will be a combination of the rates of nuclear energy generation, neutrino losses and gravitational contraction.  For a star on the main sequence though, we only expect nuclear energy generation to be significant.  Neutrino losses only become more significant at later stellar stages, and we do not expect main sequence stars to be contracting.
+
+For a star on the main sequence, we expect hydrogen burning to be the main source of energy (rather than the burning of larger elements).  Within hydrogen burning, we have two primary branches, the \emph{pp chain} and the \emph{CNO cycle}.  The total energy generation will simply be the sum of the energy generated by those two cycles:
+
+\begin{equation}
+  \epsilon = \epsilon_{pp} + \epsilon_{\mathrm{CNO}}
+  \label{eq:epsilon:ppCNO}
+\end{equation}
+
+\subsubsection{\emph{pp} Chain}
+Determining the respective energy generation rates for those cycles at a given temperature, density and composition is a question of nuclear physics.  For simplicity we adopt the approximations of \cite{Angulo}:
+
+\begin{eqnarray}
+  \epsilon_{pp} &=& 2.57 \cdot 10^4 \psi f_{11} g_{11} \rho X_1^2 T_9^{-2/3} \mathrm{e}^{-3.381/T_9^{1/3}} \label{eq:epsilon:pp} \\
+  g_{11} &\equiv& 1 + 3.82 T_9 + 1.51 T_9^2 + 0.144 T_9^3 - 0.0114 T_9^4
+\end{eqnarray}
+where $\psi$ accounts for the relative strength of the \emph{pp}-sub-chains at different conditions, $f_{11}$ is the electron shielding factor (we assume weak shielding: $f_{11} \approx 1$), $X_1$ is the hydrogen mass fraction, $X$, and $T_9$ follows the standard convention $T_9 \equiv T / 10^9 K$. While $\psi$ can be calculated through nuclear physics \citep[cf.][]{Parker}, we once again approximate it, using a ramp approximation valid for a helium mass fraction $Y \approx .2$:
+
+\begin{equation}
+  \psi =
+  \begin{cases}
+   1 &  \phantom{3 < } T_7 < 1 \\
+   1 + \frac{1}{2}\left(T_7 -1 \right)  & 1 < T_7 < 3\\
+    2  & 3 < T_7 \\
+  \end{cases}
+  \label{eq:psi}
+\end{equation}
+
+\subsubsection{CNO Cycle}
+For the CNO-cycle, we have a set of equations similar to Equation \ref{eq:epsilon:pp}, also following the work of \cite{Angulo}:
+\begin{eqnarray}
+  \epsilon_{\mathrm{CNO}} &=& 8.24 \cdot 10^25 g_{14,1} X_{\mathrm{CNO}} X_1 \rho \\
+   && \times T_9^{-2/3} \mathrm{e}^{\left(-15.231 T_9^{-1/3}\right) - \left( T_9 / 0.8 \right)^2}  \nonumber \\
+  g_{14,1} &\equiv& 1 - 2.00 T_9 + 3.41 T_9^2 - 2.43 T_9^3
+  \label{eq:epsilon:CNO}
+\end{eqnarray}
+with $X_{\mathrm{CNO}}$ being the combined mass fraction of carbon, nitrogen and oxygen:
+\begin{equation}
+   X_{\mathrm{CNO}} \equiv X_{\mathrm{C}} + X_{\mathrm{N}} + X_{\mathrm{O}} \approx 0.7 Z
+   \label{eq:X:CNO}
+\end{equation}
+where $Z$ is the mass fraction of all metals.
+
+
+\subsection{Energy Transport}
+\label{sec:theory:transport}
+Equation \ref{eq:dTdm} left us with:
+\begin{equation*}
+   \frac{\partial T}{\partial m} = - \frac{G m}{4 \pi r^4} \frac{T}{P} \nabla
+\end{equation*}
+ with $\nabla$ defined as:
+ \begin{equation*}
+   \nabla \equiv \frac{\partial \ln T}{\partial \ln P}
+ \end{equation*}
+so in order to calculate $\partial T / \partial m$, we need to know $\nabla$.  As $\nabla$ is being used as a proxy for the transfer of energy, we must know the method of energy transport.
+
+Within a stellar interior the two main mechanisms of energy transport are radiative (diffusive) transport and adiabatic (convective) transport.  Each mechanism has an associated $\nabla$, and in principle $\nabla$ will be a combination of each component $\nabla$, but in practice, $\nabla$ will be dominated by the contribution from the most efficient transport mechanism:
+\begin{equation}
+  \nabla = \min\left( \nabla_{\mathrm{rad}}, \nabla_{\mathrm{ad}}\right)
+  \label{eq:del:def}
+\end{equation}
+
+\subsubsection{Adiabatic Transport}
+\label{sec:theory:transport:ad}
+For adiabatic (convective) transport, $\nabla_\mathrm{ad}$ can simply be calculated using the definition of an adiabat, $d(P \rho^{-\gamma})_\mathrm{ad} = 0$, and the equation of state for an ideal gas, $P = \frac{\rho}{\mu}\mathcal{R} T $:
+\begin{eqnarray}
+  \nabla_\mathrm{ad} &=& \left( \frac{\partial \ln T}{\partial \ln P}\right)_\mathrm{ad} \nonumber \\
+   &=&  \frac{\partial \ln P \rho^{-1}}{\partial \ln \rho^{\gamma}} \nonumber \\
+   &=&  \frac{\partial \ln \rho^{\gamma-1}}{\partial \ln \rho^{\gamma}} \nonumber \\
+  \nabla_\mathrm{ad} &=& \frac{\gamma-1}{\gamma}
+  \label{eq:del:ad:def}
+\end{eqnarray}
+and for typical conditions of a star (neglecting hydrogen and helium partial ionization zones) we have $\gamma = 5/3$ yielding:
+\begin{equation}
+  \nabla_\mathrm{ad} = 0.4
+\end{equation}
+
+For more details on the adiabatic transport of energy, see \citet[Section 4.3]{KippenhahnWeigertWeiss}. 
+
+\subsubsection{Radiative Transport}
+\label{sec:theory:transport:rad}
+Given the condition of Local Thermodynamic Equilibrium in a spherically symmetric geometry, paired with the fundamental law of radiative transport we find:
+
+\begin{equation}
+  \frac{\partial T}{\partial r} = - \frac{3}{16 \pi a c } \frac{\kappa \rho \ell}{r^2 T^3}
+  \label{eq:FERT:r}
+\end{equation}
+where $a$ is the radiation constant, $c$ is the speed of light, and $\kappa$ is the mean opacity. (While this also holds for the more general case including conduction: $\kappa^{-1} = \kappa_\mathrm{rad}^{-1} + \kappa_\mathrm{cond}^{-1}$, we typically find that $\kappa_\mathrm{rad}$ dominates.) Changing dependent variables from radius to mass, we get:
+\begin{equation}
+  \frac{\partial T}{\partial m} = - \frac{3}{64 \pi^2 a c } \frac{\kappa  \ell}{r^4 T^3}
+  \label{eq:FERT:m}
+\end{equation}
+
+Combining Equations \ref{eq:dTdm} and \ref{eq:FERT:m} results in:
+\begin{equation}
+  \nabla_\mathrm{rad} = \frac{3}{16 \pi a c G} \frac{\kappa \ell P}{m T^4}
+  \label{eq:del:rad}
+\end{equation}
+
+
+
+\section{Numerical Methods}
+\label{sec:numerical}
+Equations \ref{eq:drdm} - \ref{eq:dTdm} define the structure of a star, but are not generally analytically integrable.  In order to find $\left\{ r, \ell, P, T \right\}$ with a given mass enclosed, $m$, the system of differential equations need to be evaluated numerically.  Broadly, this can be accomplished using a numerical integration algorithm (such as a Runge-Kutta method) and knowledge of the boundary conditions for $\left\{ r, \ell, P, T \right\}$.  Given that both the core and the stellar surface are numerically sensitive, and we can only guess the boundary conditions for a star of a given mass, we employed a \emph{shooting to a fit} algorithm.  This algorithm took guessed core and boundary conditions, and integrated to a set fitting point within a star.  The guessed boundary conditions were then iteratively varied until the inward and outward integrations converged on the same values at the fitting point.
+
+The chosen initial boundary conditions are laid out in Section \ref{sec:numerical:boundary}.  The integration method to get to the fitting point is summarized in Section \ref{sec:numerical:integrator}.  Once at the fitting point, the inward and outward values will not agree; Section \ref{sec:numerical:convergence} will detail the algorithm to iterate the boundary conditions until convergence is achieve, and how the convergence criterion is defined.
+
+\subsection{Opacity Interpolation}
+\label{sec:numerical:opacity}
+Before being able to determine the boundary conditions or begin any integrations, it is first necessary to determine the local mean opacity, $\kappa$.  Rather than use a semi-analytic model, we incorporated an empirical grid of opacities from the Opacity Project \citep{OpacityProject}, given as a function of temperature and density.  From that grid of opacities, we constructed a 2d-interpolation function which was a cubic polynomial in $\left\{\log T, \log \rho \right\}$.
+
+\subsection{Boundary Conditions}
+\label{sec:numerical:boundary}
+
+\subsubsection{Core Boundary}
+\label{sec:numerical:boundary:core}
+Given the geometry of spherical symmetry, $m=0$ constitutes a singularity for many equations.  Given the core temperature and pressure \citep[initial estimates taken from][]{Hansen}, we can determine the central density using the equation of state (namely, an ideal gas with additional radiation pressure).  Knowing central density, temperature and pressure, we can use Equations \ref{eq:drdm} - \ref{eq:dTdm} to expand our dependent variables, $\left\{ r, \ell, P, T \right\}$, to lowest order in $m$, for a small step outside $m=0$:
+\begin{eqnarray}
+  r(m) &\approx& \left( \frac{3}{4 \pi \rho_c} \right) m^{1/3} \\
+  \ell(m) &\approx& \epsilon_c m \\
+  P(m) &\approx& P_c - \frac{3 G}{8 \pi} \left(\frac{4 \pi}{3} \rho_c \right)^{4/3} m^{2/3} \\
+    T(m) &\approx& \begin{cases}
+      \left(T_c  - \frac{1}{2 a c} \left( \frac{3}{4 \pi}\right)^{2/3} \kappa_c \epsilon_c \rho_c^{4/3} m^{2/3} \right)^{1/4} & \nabla_\mathrm{ad} > \nabla_\mathrm{rad}\\
+      &  \\
+      T_c \exp \left[- \left(\frac{\pi}{6}\right)^{1/3} G 
+      \frac{\nabla_\mathrm{ad, c} \rho_c^{4/3}}{P_c} m^{2/3} \right]& \nabla_\mathrm{ad} < \nabla_\mathrm{rad}
+  \end{cases}
+\end{eqnarray}
+where the subscript $c$ denotes values at the center.  For a derivation of the above relations, see \citet[Chapter 11]{KippenhahnWeigertWeiss}.
+
+\subsubsection{Surface Boundary}
+\label{sec:numerical:boundary:surface}
+Similar to the approach taken in Section \ref{sec:numerical:boundary:core}, we can use \cite{Hansen} to determine initial estimates of the stellar luminosity and radius, $L_\ast$ and $R_\ast$.  Using the Eddington graybody approximation, we can define the surface as the mass shell located at an optical depth of $\tau=2/3$.  Using that surface, and assuming that enclosed mass and luminosity vary slowly with position, we can find: 
+\begin{eqnarray}
+  R(M_\ast) &\equiv& R_\ast \label{eq:surface:R} \\
+  L(M_\ast) &\equiv& L_\ast \label{eq:surface:L} \\
+  T(M_\ast) &\approx& T_{eff} \equiv \left( \frac{L\ast}{4 \pi \sigma_{SB} R_\ast^2} \right)^{1/4} \label{eq:surface:T} \\
+  P(M_\ast) &\approx& \frac{G M_\ast}{R_\ast^2}\frac{2}{3} \frac{1}{\kappa} \label{eq:surface:P}
+\end{eqnarray}
+where $\sigma_{SB}$ is the Stefan Boltzmann constant, $\sigma_{SB} \equiv \frac{a c}{4}$.  Once again, a more detailed derivation and discussion can be found in \cite{KippenhahnWeigertWeiss}.
+
+While that process might seem straightforward, it is complicated because neither opacity, nor density are known.  This wasn't a problem for the core, where pressure and temperature were known, which are needed for the equation of state (Equation \ref{eq:EOS}).  For this model, a numerical root finder was employed (\texttt{optimize.brentq} of the Python package \texttt{Scipy}) to find a density which produced equal pressures from the equation of state (Equation \ref{eq:EOS}) as well as the surface pressure condition (Equation \ref{eq:surface:P}) for the corresponding opacity.
+
+It should be noted that, depending on the choice of stellar mass and metallicity, the numerically determined surface density, opacity and pressure might not be unique.  In fact the choice of a $M_\ast = 2 M_\odot$ star was motivated by the uniqueness of the surface density (and therefore the uniqueness of the surface opacity and pressure).  For a visualization of this non-uniqueness problem, see Figures \ref{fig:surface:uniqueness:1Msol} and \ref{fig:surface:uniqueness:2Msol}.
+
+\begin{figure}[t]
+\centering
+  % \begin{subfigure}{.49\linewidth}
+    \includegraphics[width=.45\textwidth]{opacity_1Msolar.eps}
+        \caption{\label{fig:surface:uniqueness:1Msol} Visualization for determining the surface density through numerical root finding.  The blue line is the difference between the pressure given by the equation of state (Equation \ref{eq:EOS}), and the surface condition (Equation \ref{eq:surface:P}).  A valid solution (\emph{root}) is any $\rho$ where the numerically calculated curve crosses the x-axis (the green horizontal line).  Notice for solar values  ($M_\ast = 1 M_\odot$), there are multiple densities which satisfy the surface boundaries -- the solution is non-unique.}
+    \includegraphics[width=.45\textwidth]{opacity_2Msolar.eps}
+        \caption{\label{fig:surface:uniqueness:2Msol} Same as in Figure \ref{fig:surface:uniqueness:1Msol}, but now for $M_\ast = 2 M_\odot$. Notice that the solution is significantly more unique. }
+
+\end{figure}
+
+\subsection{Numerical Integration}
+\label{sec:numerical:integrator}
+Using Equations \ref{eq:drdm} - \ref{eq:dTdm}, we can integrate from the boundary conditions determined from \cite{Hansen} and Section \ref{sec:numerical:boundary}, towards a central fitting point, $m_f$.
+Rather than write a custom integrator, I made use of the \texttt{optimize.odeint} function within the Python package \texttt{Scipy}.  \texttt{odeint}, based on \texttt{lsoda} of the FORTRAN library \texttt{odepack} switches between solvers, depending on the stiffness of the system of differential equations.  This ability, paired with built-in adaptive step sizing, makes it a good option for these integrations, where the system changes rapidly at the bounds, but then becomes significantly stable away from the boundaries. Extra computational power can be spent resolving boundary behaviors, which can be made up the time saved taking larger, simpler steps further from the bounds.
+
+
+\subsection{Iterating to Convergence}
+\label{sec:numerical:convergence}
+While the boundary conditions given by \cite{Hansen} for a star of a given mass are useful guesses, they do not generally produce self-consistent results using the physics included in Section \ref{sec:theory}.  Typically, when integrating from the boundaries to a fitting point, the inward and outward integrations do not quite agree.  Using the level of disagreement, we can determine how we should change our boundary conditions.  This entire process can be iterated until the solution converges.
+
+\subsubsection{Iteration Algorithm}
+\label{sec:numerical:convergence:algorithm}
+In order to iteratively improve the input boundary conditions, we applied an adapted multi-dimensional Newton-Raphson method.  Treating our input boundary conditions as a 4-dimensional vector:
+\begin{equation}
+  \mathbf{x} = \left\{\frac{R_\ast}{R_{\ast,0}}, \frac{L_\ast}{L_{\ast,0}}, \frac{P_c}{P_{c,0}}, \frac{T_c}{T_{c,0}} \right\}
+\end{equation}
+which has been scaled relative to the values suggested by \cite{Hansen}, denoted with a $0$ subscript.
+
+Similarly, we can define the dependent variable as the (non-dimensionalized) fraction error at the fitting point between the inward and outward integrations:
+\begin{equation}
+  \mathbf{y} = \left\{\frac{r^+ - r^-}{r^-}, \frac{L^+ - L^-}{L^-}, \frac{P^+ - P^-}{P^-}, \frac{T^+ - T^-}{T^-} \right\}
+\end{equation}
+where the $+$ superscript denotes the value at the fitting point for the integration from the surface to the fitting point, and the $-$ superscript likewise denotes the integrate from the center.
+
+Given a set of boundary conditions, $\mathbf{x}_i$, we can determine $\mathbf{y}_j$. The challenge is to determine the $\mathbf{x}_i$ which will produce the minimal $\mathbf{y}_j$.  The Newton-Raphson method provides an iterative approach:
+\begin{equation}
+  x_i^{(n+1)} = x_i^{(n)} + \left(\frac{\partial y_j}{\partial x_i}^{(n)}\right)^{-1} y_j^{(n)}
+\end{equation}
+for the conditions of the iteration \emph{n} providing the boundary conditions for iteration \emph{(n+1)}. While in the simple case of $\mathbf{y}$ linear in $\mathbf{x}$, this should converge within the first iteration, we generally find that $\emph{y}$ is non-linear, complicating the process.
+
+Furthermore, given the numeric nature of the product, we don't typically have a closed form expression for the tensor $\partial_i \mathbf{y}_j$, let alone its inverse.  With that constraint, we can use the \emph{secant approximation} to the Newton-Raphson method:
+\begin{eqnarray}
+  \frac{\partial y_j}{\partial x_i}  &\approx& \frac{y_j(\mathbf{x} + h \mathbf{\hat{e}}_i ) - y_j(\mathbf{x})}{(x_i + h) - x_i} \\
+  h &=& 0.04 \nonumber
+\end{eqnarray}
+where $h$ was arbitrarily chosen as $.04$ and could be chosen as any similar small number.
+
+Iterative solutions were found until reaching a convergence criterion, such that there was not more than 1\% error between inward and outward integrations between any integrated value:
+\begin{equation}
+   \max{(\left|y_i\right|}) < 0.01\%
+\end{equation}
+
+The only significant alteration to the Newton-Raphson method (with the secant approximation) is that the Newton-Raphson method tends to over-predict the stability of the system with respect to changes in the initial conditions (for instance, suggesting that luminosity be decreased by 80\% within one integration). Many effects, such as the strong temperature dependence of the nuclear energy production rate $\epsilon$, produce highly sensitive, non-linear behavior in our numerical integration.  In order to increase the robustness of my algorithm, I choose relatively small step sizes ($h \approx 0.04$), and only changed my initial parameters $1/4$ of the amount proposed by the Newton-Raphson method:
+
+\begin{equation}
+  x_i^{(n+1)} - x_i^{(n)} = \frac{1}{4} \left( dx_{i,\mathrm{N-R}} \right)^{(n)} = \frac{1}{4} \left(  \frac{\partial y_j}{\partial x_i}^{-1} y_j \right)^{(n)}
+\end{equation}
+
+This ensured that the Newton-Raphson method would not over-shoot into an unstable region of parameter space, but did so at the cost of slower convergence (and thus increase runtime) for the same desired accuracy compared to the standard Newton-Raphson method.
+
+\subsubsection{Parallelization}
+\label{sec:numerical:convergence:parallel}
+During this convergence process, a majority of the runtime went into numerically integrating from the bounds to the fitting point. Preliminary tests showed that this was largely due to the overhead incurred by calling multiple nested functions to calculate the derivatives of Equations \ref{eq:drdm} - \ref{eq:dTdm}.  As those multiple function calls were largely due to my modular package design, I chose not to significantly alter the structure of my package, and instead achieve time savings through parallelizing my code.
+
+In particular, I choose run parallelize my numerical integrations, so that the inward and outward integrations would run concurrently, approximately cutting my runtime in half.  Choosing the integrations as the part to parallelize was a natural choice; they were two integrations which were expect to take roughly equal time, could be run completely independently, and were the slowest element of my code.
+
+The implementation of the parallel processing was done using the \texttt{multiprocessing} Python package.  Specifically, the functions \texttt{Pool} and \texttt{apply\_async} made things simple and painless.
+
+\section{Results}
+\label{sec:results}
+Following approximately 20 iterations (as laid out in Section \ref{sec:numerical:convergence}), my model converged on initial conditions that resulted in errors smaller than 1\% at the fitting point.  The boundary conditions for this solution may be found in Table \ref{table:bounds}.  The corresponding residual errors remaining after convergence may be found in Table \ref{table:errors}.  Graphical results of the integrations may be found in Figures \ref{fig:model:initial} and \ref{fig:model:convergence}.
+
+\begin{table}[t]
+\begin{ruledtabular}
+\begin{tabular}{l cr cr cr cr c}
+ & $R_\ast $  && $L_\ast$ && $\log P_c $ && $\log T_c $\\
+  & $[R_\odot]$  && $[L_\odot]$ && $[$dyne cm$^{-2}$] && [K]\\
+\hline
+
+Initial & 1.48 && 18.3 && 17.2 && 7.32\\ \\
+Converged & 1.70 && 15.2 && 17.2 && 7.31 \\ \\
+\texttt{EZ-Web} & 1.60 && 16.2 && 17.3 && 7.32
+
+
+\end{tabular}
+\end{ruledtabular}
+\caption{\label{table:bounds} Boundary conditions.  \emph{Initial} refers to the values suggested by \cite{Hansen}; \emph{Converged} refers to the values found to produce consistent integrations to fitting point at $m_f = 0.5 M_\ast$. \emph{\texttt{EZ-Web}} refers to the model produced using the code of \cite[see Section \ref{sec:Results:comparison}]{EZWeb}.}
+\end{table}
+
+\begin{table}[t]
+\begin{ruledtabular}
+\begin{tabular}{l lr lr lr lr c}
+ & $\frac{\Delta r}{r} $  && $\frac{\Delta \ell}{\ell} $ && $\frac{\Delta P}{P} $ && $\frac{\Delta T}{T} $\\
+\hline
+
+Initial & -0.118 && -0.281 && \phantom{-}0.354 && \phantom{-}0.182\\ \\
+Converged & -0.001 && -0.006 && -0.0004 && -0.003
+
+\end{tabular}
+\end{ruledtabular}
+\caption{\label{table:errors} Fractional errors at the fitting point, $m_f = 0.5 M_\ast$.  Convergence was define by the boundary conditions that yielding less than 1\% error for all integrated variables. \emph{Initial} refers to the errors resulting from the boundary values suggested by \cite{Hansen}; \emph{Converged} refers to the errors resulting from the boundary values which satisfied the convergence criterion.}
+\end{table}
+
+\begin{figure*}[p]
+\centering
+  % \begin{subfigure}{.49\linewidth}
+    \includegraphics[width=.75\textwidth]{stellar_model_initial_good.eps}
+        \caption{\label{fig:model:initial} Results of numerically integrating Equations \ref{eq:drdm} - \ref{eq:dTdm} with the initial boundary conditions in Table \ref{table:bounds}, as suggested by \cite{Hansen}. Fitting point, $m_f = 0.5 M_\ast$ noted by vertical dashed line. Note the discontinuities at the fitting point.}
+    \includegraphics[width=.75\textwidth]{stellar_model_converged_good.eps}
+        \caption{\label{fig:model:convergence} Same as in Figure \ref{fig:model:initial}, but now the converged boundary conditions listed in Table \ref{table:bounds}. Fitting point, $m_f = 0.5 M_\ast$ noted by vertical dashed line. The dashed represents the results of the \texttt{EZ-Web} code \citep[see Section \ref{sec:Results:comparison} and][]{EZWeb}. The disagreement between our model and the \texttt{EZ-Web} model is virtually imperceptible.}
+\end{figure*}
+
+
+\subsection{Comparison to other results}
+\label{sec:Results:comparison}
+The physics in our model necessarily neglected certain effects, in particular by using simplified expressions to encompass convective mixing, composition gradients in the star, and zones of partial ionization near the surface.
+
+To compare the reliability of our model, with its assumed physics, we compared against multiple sources.  As already discussed, the boundary conditions suggested by \cite{KippenhahnWeigertWeiss} did not lead to a consistent structure model with our included physics.
+
+We also compared our stellar structure model to the \texttt{EZ-Web} code of \cite{EZWeb}.  The results of the \texttt{EZ-Web} code, for a star of the same mass and metallicity, can be seen in Figure \ref{fig:model:convergence}.  There is significant agreement between the \texttt{EZ-Web} structure model and my structure model. There is also significant agreement between the total scale of the boundary conditions (see Table \ref{table:bounds}).
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+Using Equations \ref{eq:drdm} - \ref{eq:dTdm}, we integrated the boundary conditions suggested by \cite{Hansen}.  Given the numerical instability at both boundaries, stellar core and surface, we simultaneously integrated from the surface to a midway fitting point and from the core to the same fitting point.  Generally, the values of both integration do not agree at the fitting point.  Using an adapted Newton-Raphson method, we varied the input boundary conditions, until both inward and outward integrations converged at the fitting point.
+
+In order to implement this numerical process, we used an empirical opacity table. The range of this opacity table was limited; in order to avoid leaving the range of this table, we were restricted to stars $M_\ast \gtrsim 2 M_\odot$.
+
+In order to make this code run in a reasonable amount of time, some optimizations were required.  The biggest time cost was due to the modular design of this package. A large number of nested function calls are taken within each step of the numerical integration, incurring a significant overhead cost.  This was partially mitigated through harnessing multiple cores, using parallel programming.  Access to more cores might allow further increases in speed, but the biggest improvement would probably come through refactoring the code entirely, to reduce function call overhead.
+
+Overall, the integrations were successful, given the physics included.  When compared to observational data, the model agreed within about 15\%, but this model agreed to other models within 5-10\%.  The existence of these errors is probably a combination of numerical and physical systematics.  For instance, we modeled a \emph{Zero-Age Main Sequence} star, whereas real stars have a finite age, which can be difficult to constrain.  As a star ages, we expect its boundary conditions and structure to change, providing a source of error relative to our model.  And even at the \emph{Zero-Age Main Sequence} our model is unable to resolve all of the physics.  We could model the most significant effects, but we could not resolve composition inhomogeneities, or properly treat convection.  Such physics is certainly present, but go beyond the scope of this work.
+
+\bibliography{Gentry_StellarModel_Report}
+% \clearpage
+
+
+\end{document}
